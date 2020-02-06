@@ -6,7 +6,7 @@
         {
             "label": "build philosophers sim",
             "type": "shell",
-            "command": "make -C \"/home/asultan/Documents/highperf/ass2/q1\" all",
+            "command": "make -C \"/home/asultan/Documents/highperf/ass2/q2\" all",
             "group": {
                 "kind": "build",
                 "isDefault": true
