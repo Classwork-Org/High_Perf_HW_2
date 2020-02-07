@@ -69,7 +69,7 @@ Scheduler::Scheduler(int _philosopherCount, bool* _keepRunning, unsigned int _in
     }
 
     // Seperate adjacent philosopher in terms of priority
-    for (int i = 1; i < philosopherCount; i+=2)
+    for (int i = 1; i < philosopherCount-1; i+=2)
     {
         swap(priorityVector[i], priorityVector[i+1]);
     }
@@ -175,7 +175,9 @@ int Scheduler::find_philosopher_with_priority(int priority)
 }
 
 void Scheduler::arbitrate()
-{
+{  
+
+    
     for (int priority = 1; priority <= philosopherCount; priority++)
     {
         int philosopherIndex = find_philosopher_with_priority(priority);

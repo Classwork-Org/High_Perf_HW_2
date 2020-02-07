@@ -1,0 +1,9 @@
+To run demo run "make demo" in q1 directory. This will run the philosophers
+simulation for 5 seconds with 5 philosophers and 5 forks, ordered resource
+acquisition, new scheduling, greedy acquisition, random consumption time. 
+To change afformentioned configurations please modify cpp and re-run "make demo"
+Please note, the program may randomly terminate prematurely due to a bug in the
+terminator thread (I'm finding it difficult to reproduce this error). If
+consumption metrics are zeroes please rerun make demo. This is a bug I
+discovered the night of the submission and it's basically too late to try to fix
+it. 

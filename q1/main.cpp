@@ -17,9 +17,10 @@
 #define GET_FORKS_IN_ORDER
 // #define PROLETARIAT
 #define RUN_TIME_IN_MSEC 5000
-#define MAX_SLEEP_PERIOD 100 
-#define SCHED_UPDATE_FREQ 50
-#define SCHED_SHUFFLE_TRIGGER 4
+#define MAX_SLEEP_PERIOD 25 
+// #define ENABLE_SCHED
+#define SCHED_UPDATE_FREQ 20
+#define SCHED_SHUFFLE_TRIGGER 3
 #define SCHED_ENABLE_SHUFFLE true
 
 using std::queue;
@@ -27,7 +28,7 @@ using std::swap;
 
 unsigned int philosopherCount = 5;
 unsigned int forksCount = 5;
-bool stillSitting = true;
+static bool stillSitting = true;
 enum PhilosopherState {THINKING, PICKING_UP_FORK, EATING, PUTTING_DOWN_FORKS};
 pthread_t *philosophers;
 pthread_t terminatorThread;
@@ -35,6 +36,7 @@ pthread_t schedulerThread;
 pthread_mutex_t *forks;
 unsigned int *threadArgs;
 Scheduler *sched;
+unsigned int *eatCounter; 
 
 void* runScheduler(void *args)
 {
@@ -179,7 +181,11 @@ void* sit_down_on_table(void* args)
              * acquired if one was acquired).  
              */
             printf("Philosopher[%d] is asking scheduler to eat\n", philosopherNumber);
+
+            #ifdef ENABLE_SCHED
             sched->make_eat_request(philosopherNumber);
+            #endif
+
             printf("Philosopher[%d] has been granted the ability to eat by scheduler\n", philosopherNumber);
 
             printf("Philosopher[%d] is trying to pickup firstFork[%d]\n", philosopherNumber, firstFork);
@@ -216,6 +222,7 @@ void* sit_down_on_table(void* args)
             unsigned int eatingPeriod = get_sleep_period();
             printf("Philosopher[%d] is about to EAT for %d milliseconds\n", philosopherNumber, eatingPeriod);
             usleep(MSEC*eatingPeriod);
+            eatCounter[philosopherNumber]++;
             state = PUTTING_DOWN_FORKS;
             break;
         }
@@ -280,6 +287,7 @@ int init_sim()
         philosophers = new pthread_t[philosopherCount];
         threadArgs = new unsigned int[philosopherCount];
         sched = new Scheduler(philosopherCount, &stillSitting, SCHED_UPDATE_FREQ, SCHED_SHUFFLE_TRIGGER, SCHED_ENABLE_SHUFFLE);
+        eatCounter = new unsigned int[philosopherCount];
 	}
 	catch (const std::bad_alloc& e) 
     {
@@ -296,6 +304,7 @@ int init_sim()
     for (unsigned int threadNumber = 0; threadNumber < philosopherCount; threadNumber++)
     {
         threadArgs[threadNumber] = threadNumber;
+        eatCounter[threadNumber] = 0;
         if(pthread_create(&philosophers[threadNumber], NULL, &sit_down_on_table, (void*)(&threadArgs[threadNumber])) != 0)
         {
             printf("Failed to dispatch philosopher thread, terminating....\n");
@@ -312,6 +321,7 @@ int init_sim()
         return -1;
     }
 
+    #ifdef ENABLE_SCHED
     printf("Main is dispatching scheduler thread\n");
 
     if(pthread_create(&schedulerThread, NULL, &runScheduler, NULL))
@@ -319,6 +329,7 @@ int init_sim()
         printf("Failed to dispatch terminator... terminating (ironically)....\n");
         return -1;
     }
+    #endif
     return 0;
 }
 
@@ -360,6 +371,15 @@ int main(int argc, char const *argv[])
     cleanup_sim();
 
     printf("Simulation has concluded successfully\n");
+    printf("Metrics\n");
+
+    unsigned int total = 0;
+    for(unsigned int i = 0; i<philosopherCount; i++)
+    {
+        total += eatCounter[i];
+        printf("Philosopher[%d] has eaten %u times\n", i, eatCounter[i]);
+    }
+    printf("Total Consumptions %d\n", total);
     
     return 0;
 }

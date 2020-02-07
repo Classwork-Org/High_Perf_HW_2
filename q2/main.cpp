@@ -20,9 +20,10 @@ using std::endl;
 using std::vector; 
 using namespace std::chrono;
 
-#define THREAD_COUNT 12
+int THREAD_COUNT;
 // #define L1_CACHE INT_MAX
 #define L1_CACHE 32768
+#define MAX_THREAD_COUNT 24
 // #define PRINT_PRIMES
 // #define DEBUG
 
@@ -61,7 +62,7 @@ void simpleSieve(int limit, vector<int> &prime)
     delete[] mark;
 } 
 
-pthread_t threads[THREAD_COUNT];
+pthread_t threads[MAX_THREAD_COUNT];
 
 struct ParSegArg {
     vector<int> *prime;
@@ -69,7 +70,7 @@ struct ParSegArg {
     int segGroupUpper;
     int limit;
     int threadId;
-} threadArgs[THREAD_COUNT];
+} threadArgs[MAX_THREAD_COUNT];
 
 void* parallel_segment_process(void *arg)
 {
@@ -175,7 +176,7 @@ void segmentedSieve(int n)
 
     auto stop = high_resolution_clock::now(); 
     auto duration = duration_cast<milliseconds>(stop - start); 
-    printf("Seq time: %lu\n", duration.count());
+    printf("Seq time: %lums\n", duration.count());
 
     #ifdef PRINT_PRIMES
     printf("Primes <= %d\n", n);
@@ -227,14 +228,21 @@ void segmentedSieve(int n)
 
     stop = high_resolution_clock::now(); 
     duration = duration_cast<milliseconds>(stop - start); 
-    printf("\nPar time: %lu\n", duration.count());
+    printf("\nPar time: %lums\n", duration.count());
 
 } 
   
 // Driver program to test above function 
-int main() 
+int main(int argc, char const *argv[]) 
 { 
-    int n = INT_MAX/2; 
+    if(argc != 3)
+    {
+        printf("Invalid number of args recieved, need upper bound and thread count\n");
+        return -1;
+    }
+    int n = atoi(argv[1]);
+    THREAD_COUNT = atoi(argv[2]);
+
     // cout << "Primes smaller than " << n << endl; 
     segmentedSieve(n); 
     cout << endl;

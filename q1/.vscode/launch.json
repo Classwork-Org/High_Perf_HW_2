@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main",
-            "args": ["5", "5"],
+            "args": ["4", "4"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/",
             "environment": [],
