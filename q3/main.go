@@ -15,7 +15,6 @@ func vmult(array1 []int, array2 []int, done chan bool){
 	done <- true;
 }
 
-
 func pvmult(array1 []int, array2 []int){	
 
 	var chans [threadCount]chan bool
@@ -37,7 +36,6 @@ func pvmult(array1 []int, array2 []int){
 	}
 
 }
-
 
 func vadds(array []int, val int) {
 	for i := 0; i < len(array); i++ {

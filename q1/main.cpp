@@ -12,10 +12,11 @@
 #define SUCCESS true
 #define FAIL false
 #define MSEC 1000
+
 #define GREEDY
 #define GET_FORKS_IN_ORDER
 // #define PROLETARIAT
-#define RUN_TIME_IN_MSEC 50000
+#define RUN_TIME_IN_MSEC 5000
 #define MAX_SLEEP_PERIOD 100 
 #define SCHED_UPDATE_FREQ 50
 #define SCHED_SHUFFLE_TRIGGER 4
@@ -137,18 +138,8 @@ void putdown_fork(unsigned int fork)
  * call. This guarantees that on any given table there will always be a left
  * philosopher (philosopher that will pickup the left fork first before the
  * right one). Otherwise the order will always be left fork then right fork with
- * no righty philosophers. To guarantee no starvation a queue can be used to
- * order the requests. FIFO queues allow the philosopher that requests the forks
- * first be guaranteed access to them first, if two philosophers request forks
- * that are unrelated to eachother they'll both be inserted into the queue and
- * will instantly get to eat. If they both share a fork the first one that
- * changed state to picking up fork first will be the one that gets the fork.
- * @todo //TODO: add logic to send request to eat order queue
- * @todo //TODO: eat order queue must be thread safe (readers writers)
- * @todo //TODO: add logic for conditional variable signaling
- *  
- * @note //! apparently waiting on conditional variables can fail randomly,
-*          ! remember to place wait in while loop
+ * no righty philosophers. To guarantee no starvation a scheduler has been
+ * implemented with dynamic and fixed priority for philosophers
  *
  * @param args thread number based on dispatch order, becomes philosoper num
  * @return void* 

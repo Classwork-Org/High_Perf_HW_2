@@ -20,7 +20,7 @@ using std::endl;
 using std::vector; 
 using namespace std::chrono;
 
-#define THREAD_COUNT 24
+#define THREAD_COUNT 12
 // #define L1_CACHE INT_MAX
 #define L1_CACHE 32768
 // #define PRINT_PRIMES
